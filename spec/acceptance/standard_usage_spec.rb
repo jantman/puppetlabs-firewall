@@ -14,7 +14,8 @@ describe 'standard usage tests:' do
           proto   => 'icmp',
           action  => 'accept',
         }->
-        firewall { '001 accept all to lo interface':
+        firewall { 'accept all to lo interface':
+          order   => 1,
           proto   => 'all',
           iniface => 'lo',
           action  => 'accept',
@@ -26,7 +27,8 @@ describe 'standard usage tests:' do
         }
       }
       class my_fw::post {
-        firewall { '999 drop all':
+        firewall { 'drop all':
+          order   => 999,
           proto   => 'all',
           action  => 'drop',
           before  => undef,
