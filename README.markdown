@@ -81,16 +81,19 @@ The `pre` class should be located in `my_fw/manifests/pre.pp` and should contain
       }
 
       # Default firewall rules
-      firewall { '000 accept all icmp':
+      firewall { 'accept all icmp':
+        order   => 0,
         proto   => 'icmp',
         action  => 'accept',
       }->
-      firewall { '001 accept all to lo interface':
+      firewall { 'accept all to lo interface':
+        order   => 1,
         proto   => 'all',
         iniface => 'lo',
         action  => 'accept',
       }->
-      firewall { '002 accept related established rules':
+      firewall { 'accept related established rules':
+        order   => 2,
         proto   => 'all',
         ctstate => ['RELATED', 'ESTABLISHED'],
         action  => 'accept',
@@ -102,7 +105,8 @@ The rules in `pre` should allow basic networking (such as ICMP and TCP), as well
 The `post` class should be located in `my_fw/manifests/post.pp` and include any default rules to be applied last.
 
     class my_fw::post {
-      firewall { '999 drop all':
+      firewall { 'drop all':
+        order   => 999,
         proto   => 'all',
         action  => 'drop',
         before  => undef,
@@ -169,10 +173,24 @@ Consult the the documentation below for more details around the classes `my_fw::
 
 There are two kinds of firewall rules you can use with Firewall: default rules and application-specific rules. Default rules apply to general firewall settings, whereas application-specific rules manage firewall settings of a specific application, node, etc.
 
-All rules employ a numbering system in the resource's title that is used for ordering. When titling your rules, make sure you prefix the rule with a number.
+All rules can have an "order" parameter used for ordering, which is prepended to the title. If the order parameter is omitted, they will be ordered alphabetically by their title (which is probably not what you want, unless you have titles that begin with numeric ordering, as was the case in previous versions of this module).
 
-      000 this runs first
-      999 this runs last
+      firewall { 'this runs first':
+        order   => 0,
+        proto   => 'icmp',
+        action  => 'accept',
+      }
+      firewall { '001 this runs second':
+        proto   => 'all',
+        iniface => 'lo',
+        action  => 'accept',
+      }
+      firewall { 'this runs third':
+        order   => 2,
+        proto   => 'all',
+        ctstate => ['RELATED', 'ESTABLISHED'],
+        action  => 'accept',
+      }
 
 ###Default rules
 
@@ -184,14 +202,16 @@ Depending on the provider, the title of the rule can be stored using the comment
 
 Basic accept ICMP request example:
 
-    firewall { "000 accept all icmp requests":
+    firewall { "accept all icmp requests":
+      order  => 0,
       proto  => "icmp",
       action => "accept",
     }
 
 Drop all:
 
-    firewall { "999 drop all other requests":
+    firewall { "drop all other requests":
+      order  => 999,
       action => "drop",
     }
 
@@ -204,7 +224,8 @@ You should be able to add firewall rules to your application-specific classes so
 For example, if you have an Apache module, you could declare the class as below
 
     class apache {
-      firewall { '100 allow http and https access':
+      firewall { 'allow http and https access':
+        order  => 100,
         port   => [80, 443],
         proto  => tcp,
         action => accept,
@@ -221,14 +242,16 @@ When someone uses the class, firewalling is provided automatically.
 You can also apply firewall rules to specific nodes. Usually, you will want to put the firewall rule in another class and apply that class to a node. But you can apply a rule to a node.
 
     node 'foo.bar.com' {
-      firewall { '111 open port 111':
-        dport => 111
+      firewall { 'open port 111':
+        order => 111,
+        dport => 111,
       }
     }
 
 You can also do more complex things with the `firewall` resource. Here we are doing some NAT configuration.
 
-    firewall { '100 snat for network foo2':
+    firewall { 'snat for network foo2':
+      order    => 100,
       chain    => 'POSTROUTING',
       jump     => 'MASQUERADE',
       proto    => 'all',
@@ -239,7 +262,8 @@ You can also do more complex things with the `firewall` resource. Here we are do
 
 In the below example, we are creating a new chain and forwarding any port 5000 access to it.
 
-    firewall { '100 forward to MY_CHAIN':
+    firewall { 'forward to MY_CHAIN':
+      order   => 100,
       chain   => 'INPUT',
       jump    => 'MY_CHAIN',
     }
@@ -247,7 +271,8 @@ In the below example, we are creating a new chain and forwarding any port 5000 a
     firewallchain { 'MY_CHAIN:filter:IPv4':
       ensure  => present,
     }
-    firewall { '100 my rule':
+    firewall { 'my rule':
+      order   => 100,
       chain   => 'MY_CHAIN',
       action  => 'accept',
       proto   => 'tcp',
