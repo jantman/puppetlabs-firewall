@@ -3,7 +3,7 @@ require 'spec_helper_acceptance'
 describe "param based tests:" do
   # Takes a hash and converts it into a firewall resource
   def pp(params)
-    name = params.delete('name') || '100 test'
+    name = params.delete('name') || 'test'
     pm = <<-EOS
 firewall { '#{name}':
     EOS
@@ -27,6 +27,7 @@ firewall { '#{name}':
       fact('operatingsystemrelease') =~ /^5\./ then
 
       ppm = pp({
+        'order' => '100',
         'table' => "'raw'",
         'socket' => 'true',
         'chain' => "'PREROUTING'",
@@ -43,7 +44,8 @@ firewall { '#{name}':
     iptables_flush_all_tables
 
     ppm = pp({
-      'name' => '998 log all',
+      'name' => 'log all',
+      'order' => '998',
       'proto' => 'all',
       'jump' => 'LOG',
       'log_level' => 'debug',
@@ -56,7 +58,8 @@ firewall { '#{name}':
     iptables_flush_all_tables
 
     ppm1 = pp({
-      'name' => '004 log all INVALID packets',
+      'name' => 'log all INVALID packets',
+      'order' => '004',
       'chain' => 'INPUT',
       'proto' => 'all',
       'ctstate' => 'INVALID',
@@ -66,7 +69,8 @@ firewall { '#{name}':
     })
 
     ppm2 = pp({
-      'name' => '003 log all INVALID packets',
+      'name' => 'log all INVALID packets',
+      'order' => '003',
       'chain' => 'INPUT',
       'proto' => 'all',
       'ctstate' => 'INVALID',
@@ -89,7 +93,8 @@ firewall { '#{name}':
     iptables_flush_all_tables
 
     ppm1 = pp({
-      'name' => '004 log all INVALID packets',
+      'name' => 'log all INVALID packets',
+      'order' => '004',
       'chain' => 'INPUT',
       'proto' => 'all',
       'ctstate' => 'INVALID',
@@ -106,7 +111,8 @@ firewall { '#{name}':
     iptables_flush_all_tables
 
     ppm = pp({
-      'name'      => '997 block src ip range',
+      'name'      => 'block src ip range',
+      'order'     => '997',
       'chain'     => 'INPUT',
       'proto'     => 'all',
       'action'    => 'drop',
@@ -120,7 +126,8 @@ firewall { '#{name}':
     iptables_flush_all_tables
 
     ppm = pp({
-      'name'      => '998 block dst ip range',
+      'name'      => 'block dst ip range',
+      'order'     => '998',
       'chain'     => 'INPUT',
       'proto'     => 'all',
       'action'    => 'drop',
