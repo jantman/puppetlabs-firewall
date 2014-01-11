@@ -30,7 +30,8 @@ ARGS_TO_HASH = {
       :dport => ["7061","7062"],
       :ensure => :present,
       :line => '-A INPUT -s 1.1.1.1/32 -d 1.1.1.1/32 -p tcp -m multiport --dports 7061,7062 -m multiport --sports 7061,7062 -m comment --comment "000 allow foo" -j ACCEPT',
-      :name => "000 allow foo",
+      :name => "allow foo",
+      :order => 0,
       :proto => "tcp",
       :provider => "iptables",
       :source => "1.1.1.1/32",
@@ -192,7 +193,8 @@ ARGS_TO_HASH = {
       :chain => "INPUT",
       :ensure => :present,
       :line => '-A INPUT -p tcp -m tcp --tcp-flags SYN,RST,ACK,FIN SYN -m comment --comment "000 initiation"',
-      :name => "000 initiation",
+      :name => "initiation",
+      :order => 0,
       :proto => "tcp",
       :provider => "iptables",
       :table => "filter",
@@ -385,7 +387,8 @@ ARGS_TO_HASH = {
     :line => '-A INPUT -f -m comment --comment "010 a-f comment with dashf" -j ACCEPT',
     :table => 'filter',
     :params => {
-      :name => '010 a-f comment with dashf',
+      :name => 'a-f comment with dashf',
+      :order => 10,
       :action => 'accept',
       :isfragment => true,
     },
@@ -445,7 +448,8 @@ HASH_TO_ARGS = {
       :destination => "1.1.1.1",
       :dport => ["7061","7062"],
       :ensure => :present,
-      :name => "000 allow foo",
+      :name => "allow foo",
+      :order => 0,
       :proto => "tcp",
       :source => "1.1.1.1",
       :sport => ["7061","7062"],
@@ -460,7 +464,8 @@ HASH_TO_ARGS = {
       :dport => ["7061"],
       :ensure => :present,
       :jump => "my_custom_chain",
-      :name => "700 allow bar",
+      :name => "allow bar",
+      :order => 700,
       :proto => "udp",
       :source => "1.1.1.1",
       :sport => ["7061","7062"],
@@ -470,7 +475,8 @@ HASH_TO_ARGS = {
   },
   'no_action' => {
     :params => {
-      :name => "100 no action",
+      :name => "no action",
+      :order => 100,
       :table => "filter",
     },
     :args => ["-t", :filter, "-p", :tcp, "-m", "comment", "--comment",
@@ -478,7 +484,8 @@ HASH_TO_ARGS = {
   },
   'zero_prefixlen_ipv4' => {
     :params => {
-      :name => '100 zero prefix length ipv4',
+      :name => 'zero prefix length ipv4',
+      :order => 100,
       :table => 'filter',
       :source => '0.0.0.0/0',
       :destination => '0.0.0.0/0',
@@ -487,7 +494,8 @@ HASH_TO_ARGS = {
   },
   'zero_prefixlen_ipv6' => {
     :params => {
-      :name => '100 zero prefix length ipv6',
+      :name => 'zero prefix length ipv6',
+      :order => 100,
       :table => 'filter',
       :source => '::/0',
       :destination => '::/0',
@@ -496,7 +504,8 @@ HASH_TO_ARGS = {
   },
   'source_destination_ipv4_no_cidr' => {
     :params => {
-      :name => '000 source destination ipv4 no cidr',
+      :name => 'source destination ipv4 no cidr',
+      :order => 100,
       :table => 'filter',
       :source => '1.1.1.1',
       :destination => '2.2.2.2',
@@ -505,7 +514,8 @@ HASH_TO_ARGS = {
   },
  'source_destination_ipv6_no_cidr' => {
     :params => {
-      :name => '000 source destination ipv6 no cidr',
+      :name => 'source destination ipv6 no cidr',
+      :order => 0,
       :table => 'filter',
       :source => '2001:db8:1234::',
       :destination => '2001:db8:4321::',
@@ -514,7 +524,8 @@ HASH_TO_ARGS = {
   },
   'source_destination_ipv4_netmask' => {
     :params => {
-      :name => '000 source destination ipv4 netmask',
+      :name => 'source destination ipv4 netmask',
+      :order => 0,
       :table => 'filter',
       :source => '1.1.1.0/255.255.255.0',
       :destination => '2.2.0.0/255.255.0.0',
@@ -523,7 +534,8 @@ HASH_TO_ARGS = {
   },
  'source_destination_ipv6_netmask' => {
     :params => {
-      :name => '000 source destination ipv6 netmask',
+      :name => 'source destination ipv6 netmask',
+      :order => 0,
       :table => 'filter',
       :source => '2001:db8:1234::/ffff:ffff:ffff:0000:0000:0000:0000:0000',
       :destination => '2001:db8:4321::/ffff:ffff:ffff:0000:0000:0000:0000:0000',
@@ -532,7 +544,8 @@ HASH_TO_ARGS = {
   },
   'sport_range_1' => {
     :params => {
-      :name => "100 sport range",
+      :name => "sport range",
+      :order => 100,
       :sport => ["1-1024"],
       :table => "filter",
     },
@@ -540,7 +553,8 @@ HASH_TO_ARGS = {
   },
   'sport_range_2' => {
     :params => {
-      :name => "100 sport range",
+      :name => "sport range",
+      :order => 100,
       :sport => ["15","512-1024"],
       :table => "filter",
     },
@@ -548,7 +562,8 @@ HASH_TO_ARGS = {
   },
   'dport_range_1' => {
     :params => {
-      :name => "100 sport range",
+      :name => "sport range",
+      :order => 100,
       :dport => ["1-1024"],
       :table => "filter",
     },
@@ -556,7 +571,8 @@ HASH_TO_ARGS = {
   },
   'dport_range_2' => {
     :params => {
-      :name => "100 sport range",
+      :name => "sport range",
+      :order => 100,
       :dport => ["15","512-1024"],
       :table => "filter",
     },
@@ -564,7 +580,8 @@ HASH_TO_ARGS = {
   },
   'dst_type_1' => {
     :params => {
-      :name => '000 dst_type',
+      :name => 'dst_type',
+      :order => 0,
       :table => 'filter',
       :dst_type => 'LOCAL',
     },
@@ -572,7 +589,8 @@ HASH_TO_ARGS = {
   },
   'src_type_1' => {
     :params => {
-      :name => '000 src_type',
+      :name => 'src_type',
+      :order => 0,
       :table => 'filter',
       :src_type => 'LOCAL',
     },
@@ -580,7 +598,8 @@ HASH_TO_ARGS = {
   },
   'dst_range_1' => {
     :params => {
-      :name => '000 dst_range',
+      :name => 'dst_range',
+      :order => 0,
       :table => 'filter',
       :dst_range => '10.0.0.1-10.0.0.10',
     },
@@ -588,7 +607,8 @@ HASH_TO_ARGS = {
   },
   'src_range_1' => {
     :params => {
-      :name => '000 src_range',
+      :name => 'src_range',
+      :order => 0,
       :table => 'filter',
       :dst_range => '10.0.0.1-10.0.0.10',
     },
@@ -596,7 +616,8 @@ HASH_TO_ARGS = {
   },
   'tcp_flags_1' => {
     :params => {
-      :name => "000 initiation",
+      :name => "initiation",
+      :order => 0,
       :tcp_flags => "SYN,RST,ACK,FIN SYN",
       :table => "filter",
     },
@@ -605,7 +626,8 @@ HASH_TO_ARGS = {
   },
   'states_set_from_array' => {
     :params => {
-      :name => "100 states_set_from_array",
+      :name => "states_set_from_array",
+      :order => 100,
       :table => "filter",
       :state => ['ESTABLISHED', 'INVALID']
     },
@@ -614,7 +636,8 @@ HASH_TO_ARGS = {
   },
   'ctstates_set_from_array' => {
     :params => {
-      :name => "100 ctstates_set_from_array",
+      :name => "ctstates_set_from_array",
+      :order => 100,
       :table => "filter",
       :ctstate => ['ESTABLISHED', 'INVALID']
     },
@@ -623,7 +646,8 @@ HASH_TO_ARGS = {
   },
   'comment_string_character_validation' => {
     :params => {
-      :name => "000 allow from 192.168.0.1, please",
+      :name => "allow from 192.168.0.1, please",
+      :order => 0,
       :table => 'filter',
       :source => '192.168.0.1'
     },
@@ -631,7 +655,8 @@ HASH_TO_ARGS = {
   },
   'port_property' => {
     :params => {
-      :name => '001 port property',
+      :name => 'port property',
+      :order => 1,
       :table => 'filter',
       :port => '80',
     },
@@ -639,7 +664,8 @@ HASH_TO_ARGS = {
   },
   'log_level_debug' => {
     :params => {
-      :name => '956 INPUT log-level',
+      :name => 'INPUT log-level',
+      :order => 956,
       :table => 'filter',
       :state => 'NEW',
       :jump => 'LOG',
@@ -649,7 +675,8 @@ HASH_TO_ARGS = {
   },
   'log_level_warn' => {
     :params => {
-      :name => '956 INPUT log-level',
+      :name => 'INPUT log-level',
+      :order => 956,
       :table => 'filter',
       :state => 'NEW',
       :jump => 'LOG',
@@ -659,7 +686,8 @@ HASH_TO_ARGS = {
   },
   'load_limit_module_and_implicit_burst' => {
     :params => {
-      :name => '057 INPUT limit NTP',
+      :name => 'INPUT limit NTP',
+      :order => 57,
       :table => 'filter',
       :dport => '123',
       :limit => '15/hour'
@@ -668,7 +696,8 @@ HASH_TO_ARGS = {
   },
   'limit_with_explicit_burst' => {
     :params => {
-      :name => '057 INPUT limit NTP',
+      :name => 'INPUT limit NTP',
+      :order => 57,
       :table => 'filter',
       :dport => '123',
       :limit => '30/hour',
@@ -678,7 +707,8 @@ HASH_TO_ARGS = {
   },
   'proto_ipencap' => {
     :params => {
-      :name => '0100 INPUT accept ipencap',
+      :name => 'INPUT accept ipencap',
+      :order => 100,
       :table => 'filter',
       :proto => 'ipencap',
     },
@@ -686,7 +716,8 @@ HASH_TO_ARGS = {
   },
   'load_uid_owner_filter_module' => {
     :params => {
-      :name => '057 OUTPUT uid root only',
+      :name => 'OUTPUT uid root only',
+      :order => 57,
       :table => 'filter',
       :uid => 'root',
       :action => 'accept',
@@ -697,7 +728,8 @@ HASH_TO_ARGS = {
   },
   'load_uid_owner_postrouting_module' => {
     :params => {
-      :name => '057 POSTROUTING uid root only',
+      :name => 'POSTROUTING uid root only',
+      :order => 57,
       :table => 'mangle',
       :uid => 'root',
       :action => 'accept',
@@ -708,7 +740,8 @@ HASH_TO_ARGS = {
   },
   'load_gid_owner_filter_module' => {
     :params => {
-      :name => '057 OUTPUT gid root only',
+      :name => 'OUTPUT gid root only',
+      :order => 57,
       :table => 'filter',
       :chain => 'OUTPUT',
       :gid => 'root',
@@ -719,7 +752,8 @@ HASH_TO_ARGS = {
   },
   'load_gid_owner_postrouting_module' => {
     :params => {
-      :name => '057 POSTROUTING gid root only',
+      :name => 'POSTROUTING gid root only',
+      :order => 57,
       :table => 'mangle',
       :gid => 'root',
       :action => 'accept',
@@ -730,7 +764,8 @@ HASH_TO_ARGS = {
   },
   'mark_set-mark_int' => {
     :params => {
-      :name     => '058 set-mark 1000',
+      :name     => 'set-mark 1000',
+      :order    => 58,
       :table    => 'mangle',
       :jump     => 'MARK',
       :chain    => 'PREROUTING',
@@ -740,7 +775,8 @@ HASH_TO_ARGS = {
   },
   'mark_set-mark_hex' => {
     :params => {
-      :name     => '058 set-mark 0x32',
+      :name     => 'set-mark 0x32',
+      :order    => 58,
       :table    => 'mangle',
       :jump     => 'MARK',
       :chain    => 'PREROUTING',
@@ -750,7 +786,8 @@ HASH_TO_ARGS = {
   },
   'mark_set-mark_hex_with_hex_mask' => {
     :params => {
-      :name     => '058 set-mark 0x32/0xffffffff',
+      :name     => 'set-mark 0x32/0xffffffff',
+      :order    => 58,
       :table    => 'mangle',
       :jump     => 'MARK',
       :chain    => 'PREROUTING',
@@ -760,7 +797,8 @@ HASH_TO_ARGS = {
     },
   'mark_set-mark_hex_with_mask' => {
     :params => {
-      :name     => '058 set-mark 0x32/4',
+      :name     => 'set-mark 0x32/4',
+      :order    => 58,
       :table    => 'mangle',
       :jump     => 'MARK',
       :chain    => 'PREROUTING',
@@ -770,7 +808,8 @@ HASH_TO_ARGS = {
     },
     'iniface_1' => {
     :params => {
-      :name => '060 iniface',
+      :name => 'iniface',
+      :order => 60,
       :table => 'filter',
       :action => 'drop',
       :chain => 'INPUT',
@@ -780,7 +819,8 @@ HASH_TO_ARGS = {
   },
   'iniface_with_vlans_1' => {
     :params => {
-      :name => '060 iniface',
+      :name => 'iniface',
+      :order => 60,
       :table => 'filter',
       :action => 'drop',
       :chain => 'INPUT',
@@ -790,7 +830,8 @@ HASH_TO_ARGS = {
   },
   'iniface_with_plus_1' => {
     :params => {
-      :name => '060 iniface',
+      :name => 'iniface',
+      :order => 60,
       :table => 'filter',
       :action => 'drop',
       :chain => 'INPUT',
@@ -800,7 +841,8 @@ HASH_TO_ARGS = {
   },
   'outiface_1' => {
     :params => {
-      :name => '060 outiface',
+      :name => 'outiface',
+      :order => 60,
       :table => 'filter',
       :action => 'drop',
       :chain => 'OUTPUT',
@@ -810,7 +852,8 @@ HASH_TO_ARGS = {
   },
   'outiface_with_vlans_1' => {
     :params => {
-      :name => '060 outiface',
+      :name => 'outiface',
+      :order => 60,
       :table => 'filter',
       :action => 'drop',
       :chain => 'OUTPUT',
@@ -820,7 +863,8 @@ HASH_TO_ARGS = {
   },
   'outiface_with_plus_1' => {
     :params => {
-      :name => '060 outiface',
+      :name => 'outiface',
+      :order => 60,
       :table => 'filter',
       :action => 'drop',
       :chain => 'OUTPUT',
@@ -830,7 +874,8 @@ HASH_TO_ARGS = {
   },
   'pkttype multicast' => {
     :params => {
-      :name => '062 pkttype multicast',
+      :name => 'pkttype multicast',
+      :order => 62,
       :table => "filter",
       :action => 'accept',
       :chain => 'INPUT',
@@ -841,7 +886,8 @@ HASH_TO_ARGS = {
   },
   'socket_option' => {
     :params => {
-      :name => '050 socket option',
+      :name => 'socket option',
+      :order => 50,
       :table => 'mangle',
       :action => 'accept',
       :chain => 'PREROUTING',
@@ -851,7 +897,8 @@ HASH_TO_ARGS = {
   },
   'isfragment_option' => {
     :params => {
-      :name => '050 isfragment option',
+      :name => 'isfragment option',
+      :order => 50,
       :table => 'filter',
       :proto => :all,
       :action => 'accept',
@@ -861,7 +908,8 @@ HASH_TO_ARGS = {
   },
   'isfragment_option not changing -f in comment' => {
     :params => {
-      :name => '050 testcomment-with-fdashf',
+      :name => 'testcomment-with-fdashf',
+      :order => 50,
       :table => 'filter',
       :proto => :all,
       :action => 'accept',

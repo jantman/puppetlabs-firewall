@@ -11,7 +11,7 @@ describe firewall do
     allow(@provider).to receive(:name).and_return(:iptables)
     allow(Puppet::Type::Firewall).to receive(:defaultprovider).and_return @provider
 
-    @resource = @class.new({:name  => '000 test foo'})
+    @resource = @class.new({:name  => 'test foo', :order => 000})
 
     # Stub iptables version
     allow(Facter.fact(:iptables_version)).to receive(:value).and_return('1.4.2')
@@ -27,9 +27,14 @@ describe firewall do
   end
 
   describe ':name' do
-    it 'should accept a name' do
+    it 'should accept a name with ordering' do
       @resource[:name] = '000-test-foo'
       @resource[:name].should == '000-test-foo'
+    end
+
+    it 'should accept a name without ordering' do
+      @resource[:name] = 'test-foo'
+      @resource[:name].should == 'test-foo'
     end
 
     it 'should not accept a name with non-ASCII chars' do
@@ -39,7 +44,7 @@ describe firewall do
 
   describe ':action' do
     it "should have no default" do
-      res = @class.new(:name => "000 test")
+      res = @class.new(:name => "test")
       res.parameters[:action].should == nil
     end
 
@@ -638,4 +643,22 @@ describe firewall do
       end
     end
   end
+
+  describe ':order' do
+    it 'should accept an order integer' do
+      @resource[:order] = 1
+      @resource[:order].should == 1
+    end
+
+    it 'should accept a long order integer' do
+      @resource[:order] = 99999
+      @resource[:order].should == 99999
+    end
+
+    it 'should have no default order' do
+      res = @class.new(:name => "test")
+      res.parameters[:order].should == nil
+    end
+  end
+
 end

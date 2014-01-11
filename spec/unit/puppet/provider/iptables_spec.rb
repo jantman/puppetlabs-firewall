@@ -38,7 +38,7 @@ describe 'iptables provider detection' do
 
     # Create a resource instance and make sure the provider is iptables
     resource = Puppet::Type.type(:firewall).new({
-      :name => '000 test foo',
+      :name => 'test foo',
     })
     expect(resource.provider.class.to_s).to eq("Puppet::Type::Firewall::ProviderIptables")
   end
@@ -48,7 +48,8 @@ describe 'iptables provider' do
   let(:provider) { Puppet::Type.type(:firewall).provider(:iptables) }
   let(:resource) {
     Puppet::Type.type(:firewall).new({
-      :name  => '000 test foo',
+      :name  => 'test foo',
+      :order => 0,
       :action  => 'accept',
     })
   }
@@ -131,7 +132,11 @@ describe 'iptables provider' do
     let(:instance) { provider.new(resource) }
 
     it 'rule name contains a MD5 sum of the line' do
-      expect(resource[:name]).to eq("9000 #{Digest::MD5.hexdigest(resource[:line])}")
+      expect(resource[:name]).to eq("#{Digest::MD5.hexdigest(resource[:line])}")
+    end
+
+    it 'has an order of 9000' do
+      expect(resource[:order]).to eq(9000)
     end
 
     it 'parsed the rule arguments correctly' do
@@ -154,8 +159,13 @@ describe 'iptables provider' do
     let(:instance) { provider.new(resource) }
 
     it 'rule name contains a MD5 sum of the line' do
-      expect(resource[:name]).to eq("9000 #{Digest::MD5.hexdigest(resource[:line])}")
+      expect(resource[:name]).to eq("#{Digest::MD5.hexdigest(resource[:line])}")
     end
+
+    it 'has an order of 9000' do
+      expect(resource[:order]).to eq(9000)
+    end
+
 
     it 'parse arguments' do
       expect(resource[:chain]).to eq('INPUT')
@@ -208,7 +218,8 @@ describe 'ip6tables provider' do
   let(:provider6) { Puppet::Type.type(:firewall).provider(:ip6tables) }
   let(:resource) {
     Puppet::Type.type(:firewall).new({
-      :name  => '000 test foo',
+      :name  => 'test foo',
+      :order => 0,
       :action  => 'accept',
       :provider => "ip6tables",
     })
